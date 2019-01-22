@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		CB8F8C8821791A8D00E0D627 /* http_handler.h in Headers */ = {isa = PBXBuildFile; fileRef = CB8F8C8621791A8D00E0D627 /* http_handler.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CB8F8C9121791C4D00E0D627 /* Unbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB8F8C9021791C4D00E0D627 /* Unbox.framework */; };
 		CB8F8C9321791DD800E0D627 /* HTTPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8F8C9221791DD800E0D627 /* HTTPHandler.swift */; };
 /* End PBXBuildFile section */
 
@@ -16,7 +15,6 @@
 		CB8F8C8321791A8D00E0D627 /* http_handler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = http_handler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB8F8C8621791A8D00E0D627 /* http_handler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = http_handler.h; sourceTree = "<group>"; };
 		CB8F8C8721791A8D00E0D627 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CB8F8C9021791C4D00E0D627 /* Unbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Unbox.framework; path = Carthage/Build/iOS/Unbox.framework; sourceTree = SOURCE_ROOT; };
 		CB8F8C9221791DD800E0D627 /* HTTPHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -25,7 +23,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CB8F8C9121791C4D00E0D627 /* Unbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,7 +51,6 @@
 				CB8F8C8621791A8D00E0D627 /* http_handler.h */,
 				CB8F8C9221791DD800E0D627 /* HTTPHandler.swift */,
 				CB8F8C8721791A8D00E0D627 /* Info.plist */,
-				CB8F8C9021791C4D00E0D627 /* Unbox.framework */,
 			);
 			path = "http-handler";
 			sourceTree = "<group>";
