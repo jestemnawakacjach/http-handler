@@ -35,6 +35,19 @@ public protocol IHTTPHandlerRequest {
 
 }
 
+public protocol IHTTPHandlerResponseDecoder {
+    func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable
+}
+
+public class JSONResponseDecoder: IHTTPHandlerResponseDecoder {
+
+    public func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
+        let jsonDecoder = JSONDecoder()
+        return try jsonDecoder.decode(type, from: data)
+    }
+
+}
+
 public enum HttpHandlerError: Error {
     case WrongStatusCode(message: String?)
     case ServerResponseNotParseable(message: String?)
@@ -102,6 +115,10 @@ extension HttpHandlerError: LocalizedError {
 
 public protocol IHTTPHandler: class {
 
+    func make<T:Codable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
+
+    func make<T:Codable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void)
+
     func make<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
 
     func make<T: Unboxable>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
@@ -150,6 +167,41 @@ open class HTTPHandler: IHTTPHandler {
     public init(baseURL: String) {
         self.baseURL = baseURL
         self.urlSession = URLSession(configuration: .default)
+    }
+
+    fileprivate func handleResponse<T: Codable>(_ error: Error?,
+                                                _ response: HTTPURLResponse,
+                                                _ data: Data?,
+                                                _ decoder: IHTTPHandlerResponseDecoder,
+                                                completion: @escaping (T?, [AnyHashable: Any], Error?) -> Void) {
+        DispatchQueue.main.async {
+
+            if error != nil {
+                completion(nil, response.allHeaderFields, error)
+                return
+            }
+
+            if let dataToParse = data {
+
+                let successResponseCodes = [200, 201, 202, 203, 204]
+                guard successResponseCodes.contains(response.statusCode) else {
+                    completion(nil, response.allHeaderFields, HttpHandlerError.WrongStatusCode(message: response.debugDescription))
+                    return
+                }
+
+                do {
+                    let parsedData = try decoder.decode(T.self, from: dataToParse)
+                    completion(parsedData, response.allHeaderFields, error)
+                } catch {
+                    let jsonString = String(data: dataToParse, encoding: String.Encoding.utf8)
+                    completion(nil, response.allHeaderFields, HttpHandlerError.ServerResponseNotParseable(message: jsonString))
+                }
+
+            } else {
+                completion(nil, response.allHeaderFields, HttpHandlerError.NoDataFromServer)
+            }
+
+        }
     }
 
     fileprivate func handleResponse<T>(_ error: Error?, _ response: HTTPURLResponse, _ data: Data?, completion: @escaping (T?, [AnyHashable: Any], Error?) -> Void) {
@@ -240,6 +292,54 @@ open class HTTPHandler: IHTTPHandler {
         request.httpBody = body
     }
 
+    func run<T: Codable>(request: IHTTPHandlerRequest,
+                         decoder: IHTTPHandlerResponseDecoder, completion: @escaping (T?, [AnyHashable: Any], Error?) -> Void) {
+
+        guard let url = URL(string: self.baseURL + request.endPoint()) else { return }
+        var urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 60)
+
+        urlRequest.httpMethod = request.method()
+
+        do {
+            try decorateRequest(&urlRequest, handlerRequest: request)
+        } catch let error {
+            completion(nil, [:], error)
+            return
+        }
+
+        HTTPHandler.setVisibleActivitiIndicator(visible: true)
+
+        let task = self.urlSession.dataTask(with: urlRequest) { [weak self] (data, pResponse, error) in
+            HTTPHandler.setVisibleActivitiIndicator(visible: false)
+
+            guard let `self` = self else {
+                return
+            }
+
+            guard let response = pResponse as? HTTPURLResponse else {
+
+                if let error = error {
+                    completion(nil, [:], error)
+                } else {
+                    let responseInfo = pResponse.debugDescription
+                    completion(nil, [:], HttpHandlerError.NotHttpResponse(message: responseInfo))
+                }
+
+                return
+            }
+
+            self.handleResponse(error,
+                                response,
+                                data,
+                                decoder,
+                                completion: completion)
+
+        }
+
+        task.resume()
+    }
+
+
     func run<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, [AnyHashable: Any], Error?) -> Void) {
 
         guard let url = URL(string: self.baseURL + request.endPoint()) else { return }
@@ -316,4 +416,41 @@ open class HTTPHandler: IHTTPHandler {
         }
     }
 
+    public func make<T:Codable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void) {
+
+        self.run(request: request, decoder: decoder) { (result: T?, headers: [AnyHashable: Any], error: Error?) in
+
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            guard let result = result else {
+                completion(Result.failure(HttpHandlerError.NoDataFromServer))
+                return
+            }
+
+            completion(Result.success(result))
+        }
+
+    }
+
+    public func make<T:Codable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
+
+        let decoder = JSONResponseDecoder()
+
+        self.run(request: request, decoder: decoder) { (result: T?, headers: [AnyHashable: Any], error: Error?) in
+
+            if let error = error {
+                completion(Result.failure(error))
+                return
+            }
+            guard let result = result else {
+                completion(Result.failure(HttpHandlerError.NoDataFromServer))
+                return
+            }
+
+            completion(Result.success(result))
+        }
+
+    }
 }
