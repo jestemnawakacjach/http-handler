@@ -115,9 +115,9 @@ extension HttpHandlerError: LocalizedError {
 
 public protocol IHTTPHandler: class {
 
-    func make<T:Codable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
+    func make<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
 
-    func make<T:Codable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void)
+    func make<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void)
 
     func make<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
 
@@ -169,7 +169,7 @@ open class HTTPHandler: IHTTPHandler {
         self.urlSession = URLSession(configuration: .default)
     }
 
-    fileprivate func handleResponse<T: Codable>(_ error: Error?,
+    fileprivate func handleResponse<T: Decodable>(_ error: Error?,
                                                 _ response: HTTPURLResponse,
                                                 _ data: Data?,
                                                 _ decoder: IHTTPHandlerResponseDecoder,
@@ -292,7 +292,7 @@ open class HTTPHandler: IHTTPHandler {
         request.httpBody = body
     }
 
-    func run<T: Codable>(request: IHTTPHandlerRequest,
+    func run<T: Decodable>(request: IHTTPHandlerRequest,
                          decoder: IHTTPHandlerResponseDecoder, completion: @escaping (T?, [AnyHashable: Any], Error?) -> Void) {
 
         guard let url = URL(string: self.baseURL + request.endPoint()) else { return }
@@ -416,7 +416,7 @@ open class HTTPHandler: IHTTPHandler {
         }
     }
 
-    public func make<T:Codable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void) {
+    public func make<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void) {
 
         self.run(request: request, decoder: decoder) { (result: T?, headers: [AnyHashable: Any], error: Error?) in
 
@@ -434,7 +434,7 @@ open class HTTPHandler: IHTTPHandler {
 
     }
 
-    public func make<T:Codable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
+    public func make<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
 
         let decoder = JSONResponseDecoder()
 
