@@ -115,9 +115,9 @@ extension HttpHandlerError: LocalizedError {
 
 public protocol IHTTPHandler: class {
 
-    func make<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
+    func makeDecodable<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
 
-    func make<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void)
+    func makeDecodable<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void)
 
     func make<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
 
@@ -416,7 +416,7 @@ open class HTTPHandler: IHTTPHandler {
         }
     }
 
-    public func make<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void) {
+    public func makeDecodable<T:Decodable>(request: IHTTPHandlerRequest, decoder: IHTTPHandlerResponseDecoder, completion: @escaping (Result<T>) -> Void) {
 
         self.run(request: request, decoder: decoder) { (result: T?, headers: [AnyHashable: Any], error: Error?) in
 
@@ -434,7 +434,7 @@ open class HTTPHandler: IHTTPHandler {
 
     }
 
-    public func make<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
+    public func makeDecodable<T:Decodable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
 
         let decoder = JSONResponseDecoder()
 
