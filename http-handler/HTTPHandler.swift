@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Unbox
 
 public typealias CompletionBlock<T> = (T?, Error?) -> Void
 
@@ -121,21 +120,8 @@ public protocol IHTTPHandler: class {
 
     func make<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
 
-    func make<T: Unboxable>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void)
-
-    func makeUnboxable<T: Unboxable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void)
-
     func make(request: IHTTPHandlerRequest, completion: @escaping ([AnyHashable: Any]?, [AnyHashable: Any], Error?) -> Void)
 
-}
-
-class Response<T: Unboxable>: Unboxable {
-
-    var result: T
-
-    required init(unboxer: Unboxer) throws {
-        self.result = try unboxer.unbox(key: "result")
-    }
 }
 
 public protocol IHTTPRequestBodyCreator {
@@ -253,28 +239,6 @@ open class HTTPHandler: IHTTPHandler {
         }
     }
 
-    public func make<T: Unboxable>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void) {
-
-        self.run(request: request) { (result: UnboxableDictionary?, headers: [AnyHashable: Any], error: Error?) in
-
-            if let error = error {
-                completion(nil, error)
-                return
-            }
-            guard let result = result else {
-                completion(nil, HttpHandlerError.NoDataFromServer)
-                return
-            }
-            do {
-                let unboxed: T = try unbox(dictionary: result)
-                completion(unboxed, nil)
-            } catch let error {
-                completion(nil, error)
-            }
-
-        }
-    }
-
     public func decorateRequest(_ request: inout URLRequest,
                                 handlerRequest: IHTTPHandlerRequest,
                                 bodyCreator: IHTTPRequestBodyCreator? = JSONBodyCreator()) throws {
@@ -384,30 +348,6 @@ open class HTTPHandler: IHTTPHandler {
 
     public func make(request: IHTTPHandlerRequest, completion: @escaping ([AnyHashable: Any]?, [AnyHashable: Any], Error?) -> Void) {
         self.run(request: request, completion: completion)
-    }
-
-    public func makeUnboxable<T:Unboxable>(request: IHTTPHandlerRequest, completion: @escaping (Result<T>) -> Void) {
-
-        self.run(request: request) { (result: UnboxableDictionary?, headers: [AnyHashable: Any], error: Error?) in
-
-            if let error = error {
-                completion(Result.failure(error))
-                return
-            }
-            guard let result = result else {
-                completion(Result.failure(HttpHandlerError.NoDataFromServer))
-                return
-            }
-            do {
-                let unboxed: T = try unbox(dictionary: result)
-                completion(Result.success(unboxed))
-
-            } catch let error {
-                completion(Result.failure(error))
-            }
-
-        }
-
     }
 
     public func make<T>(request: IHTTPHandlerRequest, completion: @escaping (T?, Error?) -> Void) {
