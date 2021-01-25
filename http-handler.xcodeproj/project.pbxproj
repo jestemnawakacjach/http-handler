@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D27BCC5C25BF3CC200DC7E3C /* HTTPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27BCC5B25BF3CC200DC7E3C /* HTTPHandler.swift */; };
+		D27BCC6225BF3E6F00DC7E3C /* HTTPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27BCC6125BF3E6F00DC7E3C /* HTTPHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CB8F8C8321791A8D00E0D627 /* http_handler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = http_handler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB8F8C8721791A8D00E0D627 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D27BCC5B25BF3CC200DC7E3C /* HTTPHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPHandler.swift; sourceTree = "<group>"; };
-		D27BCC5D25BF3CCE00DC7E3C /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Package.swift; path = HttpHandler/Package.swift; sourceTree = "<group>"; };
+		D27BCC6125BF3E6F00DC7E3C /* HTTPHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPHandler.swift; sourceTree = "<group>"; };
+		D27BCC6325BF3E8200DC7E3C /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,8 +31,8 @@
 		CB8F8C7921791A8D00E0D627 = {
 			isa = PBXGroup;
 			children = (
-				D27BCC5D25BF3CCE00DC7E3C /* Package.swift */,
-				D27BCC5925BF3CC200DC7E3C /* Sources */,
+				D27BCC6325BF3E8200DC7E3C /* Package.swift */,
+				D27BCC5F25BF3E6F00DC7E3C /* Sources */,
 				CB8F8C8521791A8D00E0D627 /* http-handler */,
 				CB8F8C8421791A8D00E0D627 /* Products */,
 			);
@@ -54,19 +54,18 @@
 			path = "http-handler";
 			sourceTree = "<group>";
 		};
-		D27BCC5925BF3CC200DC7E3C /* Sources */ = {
+		D27BCC5F25BF3E6F00DC7E3C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				D27BCC5A25BF3CC200DC7E3C /* HttpHandler */,
+				D27BCC6025BF3E6F00DC7E3C /* HttpHandler */,
 			);
-			name = Sources;
-			path = HttpHandler/Sources;
+			path = Sources;
 			sourceTree = "<group>";
 		};
-		D27BCC5A25BF3CC200DC7E3C /* HttpHandler */ = {
+		D27BCC6025BF3E6F00DC7E3C /* HttpHandler */ = {
 			isa = PBXGroup;
 			children = (
-				D27BCC5B25BF3CC200DC7E3C /* HTTPHandler.swift */,
+				D27BCC6125BF3E6F00DC7E3C /* HTTPHandler.swift */,
 			);
 			path = HttpHandler;
 			sourceTree = "<group>";
@@ -149,7 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D27BCC5C25BF3CC200DC7E3C /* HTTPHandler.swift in Sources */,
+				D27BCC6225BF3E6F00DC7E3C /* HTTPHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
