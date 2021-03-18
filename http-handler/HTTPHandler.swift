@@ -178,9 +178,10 @@ open class HTTPHandler: IHTTPHandler {
                 do {
                     let parsedData = try decoder.decode(T.self, from: dataToParse)
                     completion(parsedData, response.allHeaderFields, error)
-                } catch {
+                } catch let error {
                     let jsonString = String(data: dataToParse, encoding: String.Encoding.utf8)
-                    completion(nil, response.allHeaderFields, HttpHandlerError.ServerResponseNotParseable(message: jsonString))
+                    print("HTTPHandler: error when decoding: \(jsonString)")
+                    completion(nil, response.allHeaderFields, error)
                 }
 
             } else {
