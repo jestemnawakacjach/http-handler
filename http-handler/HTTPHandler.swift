@@ -240,7 +240,7 @@ open class HTTPHandler: IHTTPHandler {
         }
     }
 
-    public func decorateRequest(_ request: inout URLRequest,
+    open func decorateRequest(_ request: inout URLRequest,
                                 handlerRequest: IHTTPHandlerRequest,
                                 bodyCreator: IHTTPRequestBodyCreator? = JSONBodyCreator()) throws {
 
