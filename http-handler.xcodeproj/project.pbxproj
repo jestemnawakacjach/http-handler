@@ -57,17 +57,17 @@
 		D27BCC5F25BF3E6F00DC7E3C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				D27BCC6025BF3E6F00DC7E3C /* HttpHandler */,
+				D27BCC6025BF3E6F00DC7E3C /* http-handler */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		D27BCC6025BF3E6F00DC7E3C /* HttpHandler */ = {
+		D27BCC6025BF3E6F00DC7E3C /* http-handler */ = {
 			isa = PBXGroup;
 			children = (
 				D27BCC6125BF3E6F00DC7E3C /* HTTPHandler.swift */,
 			);
-			path = HttpHandler;
+			path = "http-handler";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import UIKit
 
 public typealias CompletionBlock<T> = (T?, Error?) -> Void
 
@@ -162,9 +161,10 @@ open class HTTPHandler: IHTTPHandler {
                 do {
                     let parsedData = try decoder.decode(T.self, from: dataToParse)
                     completion(parsedData, response.allHeaderFields, error)
-                } catch {
+                } catch let error {
                     let jsonString = String(data: dataToParse, encoding: String.Encoding.utf8)
-                    completion(nil, response.allHeaderFields, HttpHandlerError.ServerResponseNotParseable(message: jsonString))
+                    print("HTTPHandler: error when decoding: \(jsonString)")
+                    completion(nil, response.allHeaderFields, error)
                 }
 
             } else {
@@ -207,21 +207,9 @@ open class HTTPHandler: IHTTPHandler {
 
     private static var numberOfCallsToSetVisible: Int = 0
 
-    static func setVisibleActivitiIndicator(visible: Bool) {
-        if visible {
-            HTTPHandler.numberOfCallsToSetVisible = HTTPHandler.numberOfCallsToSetVisible + 1
-        } else {
-            HTTPHandler.numberOfCallsToSetVisible = HTTPHandler.numberOfCallsToSetVisible - 1
-        }
-
-        DispatchQueue.main.async {
-            UIApplication.shared.isNetworkActivityIndicatorVisible = HTTPHandler.numberOfCallsToSetVisible > 0
-        }
-    }
-
-    public func decorateRequest(_ request: inout URLRequest,
-                                handlerRequest: IHTTPHandlerRequest,
-                                bodyCreator: IHTTPRequestBodyCreator? = JSONBodyCreator()) throws {
+    open func decorateRequest(_ request: inout URLRequest,
+                              handlerRequest: IHTTPHandlerRequest,
+                              bodyCreator: IHTTPRequestBodyCreator? = JSONBodyCreator()) throws {
         request.httpMethod = handlerRequest.method()
 
         let headers = handlerRequest.headers()
@@ -249,10 +237,7 @@ open class HTTPHandler: IHTTPHandler {
             return
         }
 
-        HTTPHandler.setVisibleActivitiIndicator(visible: true)
-
         let task = urlSession.dataTask(with: urlRequest) { [weak self] data, pResponse, error in
-            HTTPHandler.setVisibleActivitiIndicator(visible: false)
 
             guard let `self` = self else {
                 return
@@ -292,10 +277,7 @@ open class HTTPHandler: IHTTPHandler {
             return
         }
 
-        HTTPHandler.setVisibleActivitiIndicator(visible: true)
-
         let task = urlSession.dataTask(with: urlRequest) { [weak self] data, pResponse, error in
-            HTTPHandler.setVisibleActivitiIndicator(visible: false)
 
             guard let `self` = self else {
                 return
